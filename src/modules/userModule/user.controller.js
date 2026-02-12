@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { sayHello, signup } from "./user.service.js";
+import { login, sayHello, signup } from "./user.service.js";
 import { asyncHandler } from "../../utils/catchError.js";
 import { Message } from "../../db/models/message.model.js";
 const router = Router();
@@ -15,4 +15,13 @@ router.post("/signup", async (req, res, next) => {
     message: "created",
   });
 });
+router.post('/login',async(req,res,next)=>{
+  const {data}=await login(req.body)
+    return successRes({
+    res,
+    data,
+    status: 200,
+    message: "login",
+  });
+})
 export default router;

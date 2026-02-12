@@ -23,3 +23,11 @@ export const signup = async ({ username, password, email, gender, age }) => {
     data: user,
   };
 };
+
+export const login = async ({ email, password }) => {
+  const foundUser = await user.findOne({ email });
+  if (!foundUser || foundUser.password !== password) {
+    throw new Error("Invalid credentials");
+  }
+  return { data: foundUser };
+};
