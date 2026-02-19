@@ -1,14 +1,12 @@
 
-import mongoose, { model, models, Schema, Types } from "mongoose";
-import { Model } from "mongoose";
-import { type } from "os";
-import { debugPort } from "process";
-import { Gender } from "../enums/user.enums";
-import { ENUM } from "sequelize";
-import { boolean } from "webidl-conversions";
+import mongoose from "mongoose";
+
+const { model, models, Schema } = mongoose;
+
+import { Gender } from "../enums/user.enums.js";
 const userShecma = new Schema(
   {
-    firtName: {
+    firstName: {
       type: String,
       required: true,
       minLength: 3,
@@ -31,7 +29,7 @@ const userShecma = new Schema(
       minLength: 8,
     },
     gender: {
-      type: String,
+      type: Number,
       default: Gender.male,
       enum: Object.values(Gender),
     },
@@ -72,7 +70,7 @@ userShecma
     this.set("lastName", lastName);
   })
   .get(function () {
-    return `${this.firtName} ${this.lastName}`;
+    return `${this.firstName} ${this.lastName}`;
   });
 
 export const userModel = models.User || model("User", userShecma);

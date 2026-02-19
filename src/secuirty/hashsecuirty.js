@@ -1,10 +1,13 @@
-import { genSalt } from "bcrypt";
+import "dotenv/config";
+import { genSalt, hash } from "bcrypt";
 
 export const generateHash = async ({
   plaintext,
-  salt = SALT_ROUND,
+  salt = Number(process.env.SALT_ROUNDS) || 10,
   minor = "b",
 } = {}) => {
-  const genratedsalt = await genSalt(salt, minor);
-  return await hash(plaintext,genratedsalt);
+
+  const generatedSalt = await genSalt(salt, minor);
+  return await hash(plaintext, generatedSalt);
+
 };
