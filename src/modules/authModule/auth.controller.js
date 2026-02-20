@@ -1,18 +1,18 @@
 import { Router } from "express";
 import { successRes } from "../../utils/res.handle.js";
 import { userModel } from "../../db/models/user.models.js";
-import { authentication } from "../../middleware/auth.middeleware.js";
+import { authentication ,verifyTokenMiddleware} from "../../middleware/auth.middeleware.js";
+import { upload } from "../../middleware/upload.middleware.js";
 import { getUserProfile, login, signup } from "./auth.service.js";
 import dotenv from "dotenv";
 
 dotenv.config({
-  path: "./config/.env.development"
+  path: "./config/.env.development",
 });
 
 import * as authservice from "./auth.service.js";
-import jwt from 'jsonwebtoken'
+import jwt from "jsonwebtoken";
 import { OAuth2Client } from "google-auth-library";
-
 
 const router = Router();
 router.post("/signup", async (req, res, next) => {
@@ -70,8 +70,14 @@ router.post("/google", async (req, res, next) => {
       });
     }
 
-    const accessToken = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET, { expiresIn: "15m" });
-    const refreshToken = jwt.sign({ _id: user._id }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "1d" });
+    const accessToken = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET, {
+      expiresIn: "15m",
+    });
+    const refreshToken = jwt.sign(
+      { _id: user._id },
+      process.env.REFRESH_TOKEN_SECRET,
+      { expiresIn: "1d" },
+    );
 
     return res.json({ accessToken, refreshToken });
   } catch (err) {
@@ -94,6 +100,22 @@ router.post("/verify-otp", async (req, res) => {
 
   return res.json({ message: "Email confirmed" });
 });
+router.post(
+  "/upload",
+  verifyTokenMiddleware,
+  upload.single("avatar"),
+  async (req, res) => {
+    const userId = req.user._id;
 
+    await userModel.findByIdAndUpdate(userId, {
+      avatar: "/uploads/" + req.file.filename,
+    });
+
+    return res.json({
+      message: "uploaded",
+      file: req.file.filename,
+    });
+  },
+);
 
 export default router;

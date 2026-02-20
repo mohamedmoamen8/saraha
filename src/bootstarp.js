@@ -13,6 +13,7 @@ export const bootstrap = async () => {
   app.use("/user", userRouter);
   app.use("/message", messRouter);
   app.use("/auth", authRouter);
+  app.use("/uploads", express.static("uploads"));
 
   app.all("{/*dummy}", (req, res) => {
     throw new Error(`invalid url ${req.path} with method ${req.method}`, {
